@@ -249,7 +249,8 @@ macro_rules! system {
         /// * `D`: Quantity dimension. See [`Dimension`].
         /// * `U`: Quantity base units. See [`Units`].
         /// * `V`: Quantity value underlying storage type.
-        #[repr(transparent)]
+        #[cfg_attr(not(feature = "hdf5"), repr(transparent))]
+        #[cfg_attr(feature = "hdf5", repr(C))]
         pub struct Quantity<D, U, V>
         where
             D: Dimension + ?Sized,
@@ -265,6 +266,20 @@ macro_rules! system {
             /// Quantity value stored in the base units for the quantity.
             pub value: V,
         }
+
+        #[cfg(feature = "hdf5")]
+        unsafe impl<D: 'static, U: 'static, V: 'static> hdf5::H5Type for Quantity<D, U, V>
+        where
+            D: Dimension + ?Sized,
+            U: Units<V> + ?Sized,
+            V: $crate::num::Num + $crate::Conversion<V>,
+        {
+            fn type_descriptor() -> hdf5::types::TypeDescriptor {
+                // TODO this only works for f64 obviously
+                hdf5::types::TypeDescriptor::Float(hdf5::types::FloatSize::U8)
+            }
+        }
+
 
         // Type alias for dimensions where all exponents of the factors are the given value.
         type DN<N> = dyn Dimension<$($symbol = system!(@replace $symbol N),)+

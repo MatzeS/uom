@@ -155,7 +155,7 @@
 // Compile with `no_std` when the `std` feature is not specified.
 #![cfg_attr(not(feature = "std"), no_std)]
 // Rustc lints.
-#![forbid(unsafe_code)]
+#![cfg_attr(not(feature = "unsafe"), forbid(unsafe_code))]
 #![warn(
     bare_trait_objects,
     missing_copy_implementations,
