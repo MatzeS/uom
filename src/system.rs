@@ -275,8 +275,8 @@ macro_rules! system {
             V: $crate::num::Num + $crate::Conversion<V>,
         {
             fn type_descriptor() -> hdf5::types::TypeDescriptor {
-                // TODO this only works for f64 obviously
-                hdf5::types::TypeDescriptor::Float(hdf5::types::FloatSize::U8)
+                // TODO this only works for f32 obviously
+                hdf5::types::TypeDescriptor::Float(hdf5::types::FloatSize::U4)
             }
         }
 
